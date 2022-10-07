@@ -1,0 +1,14 @@
+package com.atguigu.gmall.list.dao;
+
+import com.atguigu.gmall.model.list.Goods;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.stereotype.Repository;
+
+/**
+ * @author 黄梁峰
+ *
+ * es中商品相关的映射
+ */
+@Repository
+public interface GoodsDao extends ElasticsearchRepository<Goods, Long> {
+}

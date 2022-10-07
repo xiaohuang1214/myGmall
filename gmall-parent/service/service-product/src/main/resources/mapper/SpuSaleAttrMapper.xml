@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.gmall.product.mapper.SpuSaleAttrMapper">
+    <!--根据spuId获取销售属性映射规则-->
+    <resultMap id="ruleMapper" type="com.atguigu.gmall.model.product.SpuSaleAttr" autoMapping="true">
+        <id property="id" column="id"></id>
+        <collection property="spuSaleAttrValueList" ofType="com.atguigu.gmall.model.product.SpuSaleAttrValue" autoMapping="true">
+            <id property="id" column="id_s2"></id>
+        </collection>
+    </resultMap>
+    <!--根据spuId获取销售属性-->
+    <select id="spuSaleAttrList" resultMap="ruleMapper">
+        SELECT
+            s1.id,
+            s1.spu_id,
+            s1.base_sale_attr_id,
+            s1.sale_attr_name,
+            s2.id AS id_s2,
+            s2.sale_attr_value_name
+        FROM
+            spu_sale_attr s1
+            INNER JOIN spu_sale_attr_value s2 ON s1.base_sale_attr_id = s2.base_sale_attr_id
+            AND s1.spu_id = s2.spu_id
+        WHERE
+            s1.spu_id = #{spuId}
+    </select>
+
+    <!--根据spuId和skuId获取销售属性并选定默认属性-->
+    <select id="getSaleAttrListBySkuIdAndSpuId" resultMap="ruleMapper">
+        SELECT
+            s1.id,
+            s1.spu_id,
+            s1.base_sale_attr_id,
+            s1.sale_attr_name,
+            s2.id AS id_s2,
+            s2.sale_attr_value_name,
+            IF
+                ( t3.sku_id IS NULL, 0, 1 ) AS isChecked
+        FROM
+            spu_sale_attr s1
+                INNER JOIN spu_sale_attr_value s2 ON s1.base_sale_attr_id = s2.base_sale_attr_id
+                AND s1.spu_id = s2.spu_id
+                LEFT JOIN sku_sale_attr_value t3 ON s2.id = t3.sale_attr_value_id
+                AND t3.sku_id = #{skuId}
+        WHERE
+            s1.spu_id = #{spuId}
+        ORDER BY
+            s2.id
+    </select>
+</mapper>
